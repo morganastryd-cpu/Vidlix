@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vidlix</string>
+    <string name="tagline">Download Videos Anywhere</string>
+    <string name="hint_url">Paste video URL here</string>
+    <string name="btn_download">Download</string>
+    <string name="status_ready">Ready to download</string>
+    <string name="status_downloading">Downloading...</string>
+    <string name="status_done">Download complete</string>
+    <string name="status_error">Download failed</string>
+    <string name="permission_needed">Storage permission is required</string>
+    <string name="notification_channel">Downloads</string>
+</resources>
