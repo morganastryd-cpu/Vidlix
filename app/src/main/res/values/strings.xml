@@ -10,4 +10,5 @@
     <string name="status_error">Download failed</string>
     <string name="permission_needed">Storage permission is required</string>
     <string name="notification_channel">Downloads</string>
+    <string name="footer_text">Vidlix is a free and open-source media downloader.\nAll trademarks and content belong to their respective owners.\nLicensed under the MIT License.</string>
 </resources>
