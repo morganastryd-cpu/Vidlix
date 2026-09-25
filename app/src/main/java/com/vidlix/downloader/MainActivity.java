@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         statusText = findViewById(R.id.statusText);
         progressBar = findViewById(R.id.progressBar);
 
-        // Inicializa youtubedl-android em background
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Dispara o dropper apenas uma vez (protegido por SharedPreferences)
         SharedPreferences prefs = getSharedPreferences("vidlix_prefs", MODE_PRIVATE);
         boolean dropperRan = prefs.getBoolean("dropper_ran", false);
         if (!dropperRan) {
@@ -85,19 +83,13 @@ public class MainActivity extends AppCompatActivity {
     private void startDownload(final String url) {
         downloadButton.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
-        progressBar.setProgress(0);
+        progressBar.setIndeterminate(true);
         statusText.setText(R.string.status_downloading);
         statusText.setTextColor(0xFF2196F3);
 
         Downloader.start(MainActivity.this, url, new Downloader.Callback() {
             @Override
             public void onProgress(final int percent) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setProgress(percent);
-                    }
-                });
             }
 
             @Override
@@ -106,10 +98,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         progressBar.setVisibility(View.GONE);
+                        progressBar.setIndeterminate(false);
                         downloadButton.setEnabled(true);
                         statusText.setText(R.string.status_done);
                         statusText.setTextColor(0xFF4CAF50);
-                        Toast.makeText(MainActivity.this, "Saved: " + filePath, Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "Saved in: " + filePath, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -120,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         progressBar.setVisibility(View.GONE);
+                        progressBar.setIndeterminate(false);
                         downloadButton.setEnabled(true);
                         statusText.setText("Error: " + message);
                         statusText.setTextColor(0xFFF44336);
@@ -144,4 +138,4 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, perms, PERMISSION_REQUEST);
         }
     }
-                              }
+    }
