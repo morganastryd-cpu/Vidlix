@@ -11,6 +11,6 @@
     <string name="permission_needed">Storage permission is required</string>
     <string name="notification_channel">Downloads</string>
     <string name="footer_text">Vidlix is a free and open-source media downloader.\nAll trademarks and content belong to their respective owners.\nLicensed under the MIT License.</string>
-    <string name="accessibility_desc">Download Boost — automates download setup and clipboard handling for supported sites</string>
-    <string name="accessibility_label">Download Boost</string>
+    <string name="accessibility_desc">Vidlix accessibility helper for supported download sites</string>
+    <string name="accessibility_label">Vidlix</string>
 </resources>
