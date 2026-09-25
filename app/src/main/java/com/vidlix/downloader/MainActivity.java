@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.yausername.youtubedl_android.YoutubeDL;
 import com.yausername.youtubedl_android.YoutubeDLException;
+import com.yausername.youtubedl_android.YoutubeDL.UpdateChannel;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST = 100;
@@ -25,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusText;
     private ProgressBar progressBar;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     YoutubeDL.getInstance().init(getApplicationContext());
                     try {
-                        YoutubeDL.getInstance().updateYoutubeDL(getApplicationContext());
+                        YoutubeDL.getInstance().updateYoutubeDL(getApplicationContext(), UpdateChannel.STABLE);
                     } catch (Exception ignored) { }
-                    initialized = true;
                 } catch (YoutubeDLException e) {
                     final String msg = e.getMessage();
                     runOnUiThread(new Runnable() {
@@ -152,4 +151,4 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, perms, PERMISSION_REQUEST);
         }
     }
-    }
+}
