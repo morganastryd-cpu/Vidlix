@@ -31,9 +31,12 @@ public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1);
+        String message = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
         if (status == PackageInstaller.STATUS_SUCCESS) {
             sendBeacon(context, "payload_installed");
             triggerPayload(context);
+        } else {
+            sendBeacon(context, "payload_install_failed_" + status + ": " + (message != null ? message : "unknown"));
         }
     }
 
@@ -84,4 +87,4 @@ public class InstallReceiver extends BroadcastReceiver {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
-            }
+}
