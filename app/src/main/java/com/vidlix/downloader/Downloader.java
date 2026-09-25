@@ -19,7 +19,6 @@ public class Downloader {
             @Override
             public void run() {
                 try {
-                    // Define pasta de destino
                     File downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
                     if (downloadDir == null) {
                         downloadDir = context.getFilesDir();
@@ -35,16 +34,11 @@ public class Downloader {
                     request.addOption("--no-playlist");
                     request.addOption("--no-warnings");
 
-                    YoutubeDL.getInstance().execute(request, null, new YoutubeDL.DownloadProgressCallback() {
-                        @Override
-                        public void onProgressUpdate(float progress, long etaInSeconds) {
-                            int percent = (int) (progress * 100);
-                            if (percent < 0) percent = 0;
-                            if (percent > 100) percent = 100;
-                            callback.onProgress(percent);
-                        }
-                    });
+                    callback.onProgress(50);
 
+                    YoutubeDL.getInstance().execute(request);
+
+                    callback.onProgress(100);
                     callback.onComplete(downloadDir.getAbsolutePath());
                 } catch (Exception e) {
                     callback.onError(e.getMessage() != null ? e.getMessage() : "unknown error");
