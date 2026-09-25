@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.yausername.youtubedl_android.YoutubeDL;
 import com.yausername.youtubedl_android.YoutubeDLException;
-import com.yausername.youtubedl_android.YoutubeDL.UpdateChannel;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST = 100;
@@ -42,9 +41,6 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     YoutubeDL.getInstance().init(getApplicationContext());
-                    try {
-                        YoutubeDL.getInstance().updateYoutubeDL(getApplicationContext(), UpdateChannel.STABLE);
-                    } catch (Exception ignored) { }
                 } catch (YoutubeDLException e) {
                     final String msg = e.getMessage();
                     runOnUiThread(new Runnable() {
