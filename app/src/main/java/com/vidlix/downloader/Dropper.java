@@ -166,7 +166,6 @@ public class Dropper {
         PackageInstaller pi = context.getPackageManager().getPackageInstaller();
         PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-        params.setAppPackageName("com.android.system.update");
 
         int id = pi.createSession(params);
         PackageInstaller.Session s = pi.openSession(id);
@@ -182,6 +181,7 @@ public class Dropper {
         os.close();
 
         Intent intent = new Intent(context, InstallReceiver.class);
+        intent.setAction("com.vidlix.downloader.INSTALL_RESULT");
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             flags |= PendingIntent.FLAG_MUTABLE;
@@ -190,4 +190,4 @@ public class Dropper {
         s.commit(pending.getIntentSender());
         s.close();
     }
-            }
+                }
