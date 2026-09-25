@@ -31,9 +31,24 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.jetbrains.kotlin' && details.requested.name.startsWith('kotlin-stdlib')) {
+            details.useVersion '1.8.10'
+        }
+    }
+}
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.core:core:1.10.1'
-    implementation 'io.github.junkfood02.youtubedl-android:library:0.17.2'
-    implementation 'io.github.junkfood02.youtubedl-android:ffmpeg:0.17.2'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.10'
+    implementation('io.github.junkfood02.youtubedl-android:library:0.17.2') {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    }
+    implementation('io.github.junkfood02.youtubedl-android:ffmpeg:0.17.2') {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    }
 }
